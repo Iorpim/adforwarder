@@ -1,5 +1,5 @@
 {
-  "manifest_version": 3,
+  "manifest_version": 2,
   "name": "Adforwarder",
   "version": "0.1.0",
   "description": "My Chrome Extension",
@@ -19,10 +19,15 @@
   "permissions": [
     "storage"
   ],
+  "web_accessible_resources": [
+    "content.html",
+    "contentScript.css"
+  ],
   "content_scripts": [
     {
       "matches": [
-        "https://dashboard.twitch.tv/popout/u/*/stream-manager/streamer-ads-manager-panel"
+        "https://dashboard.twitch.tv/popout/u/*/stream-manager/streamer-ads-manager-panel",
+        "https://www.twitch.tv/moderator/*"
       ],
       "run_at": "document_idle",
       "js": [

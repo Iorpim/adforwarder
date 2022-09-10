@@ -10,10 +10,10 @@ import { tokenChars } from 'ws/lib/validation';
 
 Amplify.configure(awsmobile);
 
-var USERID = "Trj3Z04Rx04Zl2HGSggtk5Iu8S3yfrS";
+var USERID = "Trj3Z04Rx04Zl2HGSggtk5Iu8S3yfrj";
 
 var BROADCASTER = false;
-var LIGHT_MODE = !false;
+//var LIGHT_MODE = false;
 
 // Content script file will run in the context of web page.
 // With content script you can manipulate the web pages using
@@ -57,7 +57,7 @@ var timer_status = {
   standby_near: "timer-status-standby-near",
   active: "timer-status-active",
   offline: "timer-status-offline",
-  offline_light: "timer-status-offline-light"
+  //offline_light: "timer-status-offline-light"
 };
 
 var timer_status_text = {
@@ -139,28 +139,76 @@ function broadcasterHandler() {
   }
 }
 
+var lastReceived = 0;
+var next = 0;
+var nextAd = false;
+var timer_status_class = timer_status.offline;
+
+function pageInject(n) {
+  //w("div[data-highlight-selector='active-mods']").then(a => {
+    //a = a[0];
+  //});
+  w("p[title='Active Mods']").then(e => {
+    e = e[0];
+    e.title = "Ad Timer";
+    e.innerText = "AD TIMER";
+    var m = e.parentElement.parentElement.parentElement.parentElement;
+    if(m.classList == "modview-dock-widget__preview") {
+      m.style["height"] = "155px";
+    }
+  });
+  w(".active-mods-list").then(b => {
+    b = b[0].parentElement;
+    var a = b.parentElement;
+    b.remove();
+    var c = document.createElement("div");
+    a.insertBefore(c, a.firstChild);
+    c.innerHTML = n;
+  });
+}
+
+function modHandler() {
+  try {
+    var content = chrome.runtime.getURL("content.html");
+  } catch(e) {
+    console.error(e);
+    var content = "content.html";
+  }
+  fetch(content, {
+    "mode": "cors"
+  }).then(x => x.text()).then(y => {
+    /* if(LIGHT_MODE) {
+      w(".card-timer-content").then((e) => {
+        e.forEach(i => i.classList.add("card-content-light"));
+      });
+    } */
+    pageInject(y);
+    w("#contentScript-css").then(e => { 
+      try {
+        e[0].href = chrome.runtime.getURL("/contentScript.css"); 
+      } catch(e) { console.error(e); }
+    });
+    updateTimer("00:00:00", timer_status_text.standby, timer_status_class);
+    getMessage(USERID);
+    onUpdateMessage(USERID);
+    setTimeout(() => {
+      w("p[title='Active Mods']").then(e => {
+        modHandler();
+      });
+    }, 5000);
+    return startTimer();
+  });
+}
+
 function broadcasterPage() {
   return BROADCASTER;
 }
 
 if(broadcasterPage()) {
   broadcasterHandler();
+} else {
+  modHandler()
 }
-
-var lastReceived = 0;
-var next = 0;
-var nextAd = false;
-var timer_status_class = timer_status.offline;
-if(LIGHT_MODE) {
-  w(".card-timer-content").then((e) => {
-    e.forEach(i => i.classList.add("card-content-light"));
-  });
-}
-updateTimer("00:00:00", timer_status_text.standby, timer_status_class);
-getMessage(USERID);
-onUpdateMessage(USERID);
-startTimer();
-
 
 function getMessage(userid) {
   API.graphql({ query: getUpdateMessage, variables: {userid: userid}}).then((m) => {
@@ -200,10 +248,10 @@ function durationFormat(duration) {
 }
 
 function startTimer() {
-  setInterval(() => {
+  return setInterval(() => {
     var [t, d, s, c] = !lastMessage ? simpleHandler() : lastHandler();
     if(t < (-300000 + d)) {
-      updateTimer("--:--:--", timer_status_text.offline, LIGHT_MODE ? timer_status.offline_light : timer_status.offline);
+      updateTimer("--:--:--", timer_status_text.offline, /* LIGHT_MODE ? timer_status.offline_light :*/ timer_status.offline);
       return;
     }
     updateTimer(t > d ? durationFormat(t) : "00:00:00", s, c);

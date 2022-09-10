@@ -83,7 +83,23 @@ const common = {
   ],
   resolve: {
     extensions: ["*", ".ts", ".js"]
-  }
+  },
+  devServer: {
+    static: {
+      directory: PATHS.build,
+    },
+    allowedHosts: [
+      "all",
+    ],
+    compress: true,
+    port: 4200,
+  },
+  ignoreWarnings: [
+    {
+      module: /\/node_modules\//,
+    },
+    (warning) => true,
+  ],
 };
 
 module.exports = common;
