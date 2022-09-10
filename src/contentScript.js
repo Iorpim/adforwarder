@@ -57,13 +57,15 @@ var timer_status = {
   active: "timer-status-active",
   offline: "timer-status-offline",
   //offline_light: "timer-status-offline-light"
+  disabled: "timer-status-offline"
 };
 
 var timer_status_text = {
   standby: "STANDBY",
   standby_near: "STANDY",
   active: "ACTIVE",
-  offline: "OFFLINE"
+  offline: "OFFLINE",
+  disabled: "DISABLED"
 };
 
 function broadcasterHandler() {
@@ -173,7 +175,7 @@ function getURL(url) {
 
 function modHandler() {
   try {
-    var content = getURL("content.html");
+    var content = getURL("/content.html");
   } catch(e) {
     var content = "content.html";
     debugger;
@@ -255,7 +257,16 @@ function durationFormat(duration) {
 
 function startTimer() {
   return setInterval(() => {
-    var [t, d, s, c] = !lastMessage ? simpleHandler() : lastHandler();
+    try {
+      var [t, d, s, c] = !lastMessage ? simpleHandler() : lastHandler();
+    } catch(e) {
+      if((e instanceof adScheduleDisabled)) {
+        updateTimer("--:--:--", timer_status_text.disabled, timer_status.disabled);
+      }
+      else {
+        throw e;
+      }
+    }
     if(t < (-300000 + d)) {
       updateTimer("--:--:--", timer_status_text.offline, /* LIGHT_MODE ? timer_status.offline_light :*/ timer_status.offline);
       return;
@@ -265,6 +276,9 @@ function startTimer() {
 }
 
 function simpleHandler() {
+  if(!message[0].data.user.adProperties.density.isAdScheduleEnabled) {
+    throw new adScheduleDisabled();
+  }
   var s,c;
   var t = (next - Date.now());
   if(t > 10*60000) {
@@ -285,15 +299,34 @@ function simpleHandler() {
 }
 
 function lastHandler() {
-  return simpleHandler();
+  var m = message[0].data.user.adProperties.density;
+  var l = lastMessage[0].data.user.adProperties.density;
+  if(!m.isAdScheduleEnabled) {
+    throw new adScheduleDisabled("New message contains a disabled ad schedule");
+  }
+  if(!l.isAdScheduleEnabled) {
+    return simpleHandler();
+  }
+  var interval = m.interval.desiredSeconds;
+  var diff = (Date.parse(m.adSchedule[0].runAtTime) - Date.parse(l.adSchedule[0].runAtTime))/interval;
+  var d = -1 * diff * nextAd.durationSeconds;
+  if(diff == 0) {
+    return this.simpleHandler();
+  } else {
+    var t = d + (Date.now() - lastReceived);
+    s = timer_status_text.active;
+    c = timer_status.active;
+    if(t >= 0) {
+      lastMessage = false;
+    }
+    return [t, d, s, c];
+  }
 }
 
 function updateTimer(t, s, c) {
   w("p.content-timer-text").then(e => {
     e.forEach( i => {
-      if(i.innerText != t) {
-        i.innerText = t
-      }
+      return i.innerText = t;
     });
   });
   w("p.content-status-text").then(e => {
@@ -303,7 +336,9 @@ function updateTimer(t, s, c) {
         i.parentElement.classList.replace(timer_status_class, c);
         timer_status_class = c;
       }
-      i.innerText = s;
+      if(i.innerText != s) {
+        i.innerText = s;
+      }
       });
   });
 }
@@ -352,3 +387,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   sendResponse({});
   return true;
 });*/
+
+class adScheduleDisabled extends Error {
+  constructor(message = "", ...args) {
+    super(message, ...args);
+    Object.setPrototypeOf(this, adScheduleDisabled.prototype);
+  }
+}
