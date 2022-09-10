@@ -6,7 +6,6 @@ import { onUpdateUpdateMessage } from './graphql/subscriptions';
 import awsmobile from './aws-exports';
 
 import './content.scss';
-import { tokenChars } from 'ws/lib/validation';
 
 Amplify.configure(awsmobile);
 
@@ -167,12 +166,17 @@ function pageInject(n) {
   });
 }
 
+
+function getURL(url) {
+  return ((chrome.runtime && chrome.runtime.getURL) ? chrome.runtime.getURL(url) : browser.runtime.getURL(url));
+}
+
 function modHandler() {
   try {
-    var content = chrome.runtime.getURL("content.html");
+    var content = getURL("content.html");
   } catch(e) {
-    console.error(e);
     var content = "content.html";
+    debugger;
   }
   fetch(content, {
     "mode": "cors"
@@ -185,7 +189,7 @@ function modHandler() {
     pageInject(y);
     w("#contentScript-css").then(e => { 
       try {
-        e[0].href = chrome.runtime.getURL("/contentScript.css"); 
+        e[0].href = getURL("/contentScript.css");
       } catch(e) { console.error(e); }
     });
     updateTimer("00:00:00", timer_status_text.standby, timer_status_class);
@@ -220,6 +224,8 @@ function getMessage(userid) {
     message = JSON.parse(m.data.getUpdateMessage.payload);
     updateAd();
     lastMessage = false;
+  }).catch(e => {
+    console.error(e);
   });
 }
 
@@ -284,7 +290,11 @@ function lastHandler() {
 
 function updateTimer(t, s, c) {
   w("p.content-timer-text").then(e => {
-    e.forEach( i => i.innerText = t);
+    e.forEach( i => {
+      if(i.innerText != t) {
+        i.innerText = t
+      }
+    });
   });
   w("p.content-status-text").then(e => {
     e.forEach(i => {

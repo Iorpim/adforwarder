@@ -126,17 +126,17 @@
 }
 
 .timer-status-standby {
-  background-color: #00f593;
+  background-color: #5cffbe;
   color: #000000;
 }
 
 .timer-status-active {
-  background-color: #ff4f4d;
+  background-color: var(--color-background-button-error);
   color: #000000;
 }
 
 .timer-status-standby-near {
-  background-color: #9147ff;
+  background-color: var(--color-background-button-warn);
   color: #FFFFFF;
 }
 

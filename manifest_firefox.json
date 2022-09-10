@@ -1,5 +1,5 @@
 {
-  "manifest_version": 3,
+  "manifest_version": 2,
   "name": "Adforwarder",
   "version": "0.2.2",
   "description": "Twitch ad data forwarder/timer for mod view",
@@ -10,23 +10,19 @@
     "128": "icons/icon_128.png"
   },
   "background": {
-    "service_worker": "background.js"
+    "scripts": ["background.js"]
   },
   "action": {
     "default_title": "Adforwarder",
     "default_popup": "popup.html"
   },
-  "host_permissions": [
-    "https://*.amazonaws.com/*"
-  ],
   "permissions": [
+    "https://*.amazonaws.com/*",
     "storage"
   ],
   "web_accessible_resources": [
-    {
-    "resources": ["content.html", "contentScript.css"],
-    "matches": ["<all_urls>"]
-    }
+    "content.html",
+    "contentScript.css"
   ],
   "content_scripts": [
     {
