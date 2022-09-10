@@ -1,0 +1,152 @@
+%card-timer-text {
+    font-family: "Poppins";
+    font-weight: 500;
+  }
+
+  %card-timer-text-header {
+    @extend %card-timer-text;
+    font-weight: bold;
+  }
+
+  %card-panel {
+    border-radius: 0.4rem;
+    height: 160px;
+    margin: auto;
+    max-width: 295px;
+    max-height: 160px;
+    min-height: 160px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4), 0 0 4px rgba(0,0,0,0.4); //drop-shadow(0px 4px 4px rgba(0,0,0,.12)) drop-shadow(0px 0px 10px rgba(0,0,0,.06)) //drop-shadow(0 1px 8px rgba(0,0,0,0.12))
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2), 0 0 4px rgba(0,0,0,0.05);
+    //box-shadow: 0 0 0 9999px rgba(0,0,0,.6);
+    //box-shadow: rgba(0,0,0,.6) 0 0 0 9999px;
+  }
+
+  .card-panel-dark {
+    @extend %card-panel;
+    background-color: #18181B;
+    color: #FFFFFF;
+  }
+
+  .card-panel-light {
+    @extend %card-panel;
+    background-color: #FFFFFF;
+    color: #000000;
+  }
+
+.card-header-container {
+    border: 0;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+.card-timer-content {
+  display: flex;
+  width: 100%;
+  height: 121px;
+}
+
+.card-header {
+    @extend %card-timer-text-header;
+    display: inline-flex;
+    font-size: 1.0rem;
+    margin-bottom: 8px;
+    margin-left: 20px;
+    margin-top: 7px;
+    width: 100%;
+}
+
+.card-hr {
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #3a3a3e;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+.card-vr {
+  border-left: 1px solid #3a3a3e;
+  height: 111px;
+  margin-top: 2.3px;
+}
+
+.card-timer-container {
+    display: flex;
+    margin: auto;
+    margin-top: 3px;
+    max-width: 295px;
+    height: 121px;
+}
+
+.card-timer-content {
+  flex-direction: column;
+  height: 100%;
+  padding-top: 5px;
+  width: 50%;
+  color: #FFFFFF;
+}
+
+.card-timer-content > p {
+  @extend %card-timer-text-header;
+  margin: auto;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  text-align: center;
+}
+
+.timer-content-box {
+  background-color: #464649;
+  border-radius: 0.4rem;
+  height: 50px;
+  margin: auto;
+  margin-top: 13px;
+  width: 114px;
+}
+
+.timer-content-box.card-content-light, .card-timer-content.card-content-light {
+  color: #000000;
+}
+
+.content-timer-text {
+  @extend %card-timer-text;
+  font-size: 1.35rem;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.content-timer-text-negative {
+  margin-right: 8.5px;
+}
+
+.content-status-text {
+  @extend %card-timer-text;
+  font-size: 1.4rem;
+  text-align: center;
+  margin-top: 8px;
+}
+
+.timer-status-standby {
+  background-color: #00f593;
+  color: #000000;
+}
+
+.timer-status-active {
+  background-color: #ff4f4d;
+  color: #000000;
+}
+
+.timer-status-standby-near {
+  background-color: #9147ff;
+  color: #FFFFFF;
+}
+
+.timer-status-offline {
+  background-color: #202022;
+  color: #535354;
+}
+
+.timer-status-offline-light {
+  background-color: #F9F9F9;
+  color: #D4D4D4;
+}

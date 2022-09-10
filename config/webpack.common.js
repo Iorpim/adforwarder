@@ -46,6 +46,24 @@ const common = {
           },
         ],
       },
+      {
+        test: /\.(ts|js)?$/,
+        exclude: /node_modules/,
+       use: {
+        loader: "babel-loader",
+        options: {
+          presets: ["@babel/preset-env", "@babel/preset-typescript"],
+        },
+       },
+      },
+      {
+        test: /\.s[ac]ss$/i,
+        use: [
+          MiniCssExtractPlugin.loader,
+          "css-loader",
+          "sass-loader",
+        ],
+      },
     ],
   },
   plugins: [
@@ -63,6 +81,9 @@ const common = {
       filename: '[name].css',
     }),
   ],
+  resolve: {
+    extensions: ["*", ".ts", ".js"]
+  }
 };
 
 module.exports = common;
