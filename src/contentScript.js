@@ -12,6 +12,8 @@ Amplify.configure(awsmobile);
 var USERID = "Trj3Z04Rx04Zl2HGSggtk5Iu8S3yfrj";
 
 var BROADCASTER = false;
+var USER_REGEX = /https:\/\/(?:www.)?twitch.tv\/(?:popout\/)?moderator\/([a-zA-Z_0-9]{3,})(?:\/.*)?$/i;
+var IS_CHROME = (chrome.runtime && chrome.runtime.getURL);
 //var LIGHT_MODE = false;
 
 // Content script file will run in the context of web page.
@@ -170,7 +172,7 @@ function pageInject(n) {
 
 
 function getURL(url) {
-  return ((chrome.runtime && chrome.runtime.getURL) ? chrome.runtime.getURL(url) : browser.runtime.getURL(url));
+  return (IS_CHROME ? chrome.runtime.getURL(url) : browser.runtime.getURL(url));
 }
 
 function modHandler() {
@@ -235,9 +237,16 @@ function onUpdateMessage(userid) {
   API.graphql(graphqlOperation(onUpdateUpdateMessage, {userid: userid})).subscribe(
     {
       next: (m) => {
+        var t = JSON.parse(m.value.data.onUpdateUpdateMessage.payload);
+        if(message[0].extensions.requestID == t[0].extensions.requestID) {
+          console.log("Repeated message received!");
+          console.log(message);
+          console.log(t);
+          return;
+        }
         lastReceived = Date.now();
         lastMessage = message;
-        message = JSON.parse(m.value.data.onUpdateUpdateMessage.payload);
+        message = t;
         console.log(message);
         updateAd();
       }
@@ -288,7 +297,7 @@ function simpleHandler() {
   } else {
     c = timer_status.active;
   }
-  var d = -t*nextAd.durationSeconds*1000;
+  var d = -1*nextAd.durationSeconds*1000;
   if(t < 0 && t >= d) {
     s = `${timer_status_text.active}?`;
     t = d-t;
@@ -311,11 +320,11 @@ function lastHandler() {
   var diff = (Date.parse(m.adSchedule[0].runAtTime) - Date.parse(l.adSchedule[0].runAtTime))/interval;
   var d = -1 * diff * nextAd.durationSeconds;
   if(diff == 0) {
-    return this.simpleHandler();
+    return simpleHandler();
   } else {
     var t = d + (Date.now() - lastReceived);
-    s = timer_status_text.active;
-    c = timer_status.active;
+    var s = timer_status_text.active;
+    var c = timer_status.active;
     if(t >= 0) {
       lastMessage = false;
     }

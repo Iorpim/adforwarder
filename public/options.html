@@ -3,14 +3,147 @@
   <head>
     <title>Ad Forwarder Options</title>
     <link rel="stylesheet" href="options.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins">
   </head>
   <body>
   <!-- Start your code here -->
     <div class="main-body">
-      <form style="margin: auto;">
-        <p>aaaaaasdasdsadas</p>
-      </form>
-      <button id="signin-test">Sign in test</button>
+      <p class="page-label">Ad Forwarder</p>
+      <hr/>
+      <br class="error-display"/>
+      <div class="error-display">
+        <p>Failed to add user: User not found</p>
+      </div>
+      <div class="container">
+        <p class="section-label">Forwarder options</p>
+        <p class="label-item">Only allow mods:</p>
+        <div style="margin-top: auto; margin-bottom: auto;">
+              <div class="button b2">
+                <input type="checkbox" class="checkbox" id="checkbox-mods-only" />
+                <div class="knobs">
+                  <span></span>
+                </div>
+                <div class="layer"></div>
+              </div>
+        </div>
+        <p class="label-item">Auto allow mods:</p>
+        <div style="margin-top: auto; margin-bottom: auto">
+              <div class="button b2">
+                <input type="checkbox" class="checkbox" id="checkbox-mods-auto"/>
+                <div class="knobs">
+                  <span></span>
+                </div>
+                <div class="layer"></div>
+              </div>
+        </div>
+        <p class="list-label">Allowed users:</p>
+        <div class="list-item">
+          <nav>
+            <ul>
+              <li>aaaa<button>Remove</button></li>
+              <li>bbbbb<button>Remove</button></li>
+              <li>bbbbb<button>Remove</button></li>
+              <li>bbbbb<button>Remove</button></li>
+              <li>bbbbb<button>Remove</button></li>
+              <li>bbbbb<button>Remove</button></li>
+              <li>bbbbb<button>Remove</button></li>
+              <li>bbbbb<button>Remove</button></li>
+            </ul>
+          </nav>
+          <div class="list-item-container">
+            <input placeholder="username"/><button>Allow user</button>
+          </div>
+        </div>
+        <br/>
+        <div class="section-hr">
+          <hr/>
+        </div>
+        <p class="section-label">Mod options</p>
+        <div></div>
+        <p class="list-label">Configured users:</p>
+        <div class="list-item">
+          <nav>
+            <ul>
+              <li>aaaa<button>Remove</button>
+                <div>
+                <div class="button b2 button-mods-auto" id="button-mods-auto" style="float: right">
+                <input type="checkbox" class="checkbox" />
+                <div class="knobs">
+                  <span></span>
+                </div>
+                <div class="layer"></div>
+              </div>
+        </div></li>
+              <li>bbbbb<button>Remove</button><div>
+                <div class="button b2 button-mods-auto" id="button-mods-auto" style="float: right">
+                <input type="checkbox" class="checkbox" />
+                <div class="knobs">
+                  <span></span>
+                </div>
+                <div class="layer"></div>
+              </div></li>
+              <li>bbbbb<button>Remove</button><div>
+                <div class="button b2 button-mods-auto" id="button-mods-auto" style="float: right">
+                <input type="checkbox" class="checkbox" />
+                <div class="knobs">
+                  <span></span>
+                </div>
+                <div class="layer"></div>
+              </div></li>
+              <li>bbbbb<button>Remove</button><div>
+                <div class="button b2 button-mods-auto" id="button-mods-auto" style="float: right">
+                <input type="checkbox" class="checkbox" />
+                <div class="knobs">
+                  <span></span>
+                </div>
+                <div class="layer"></div>
+              </div></li>
+              <li>bbbbb<button>Remove</button><div>
+                <div class="button b2 button-mods-auto" id="button-mods-auto" style="float: right">
+                <input type="checkbox" class="checkbox" />
+                <div class="knobs">
+                  <span></span>
+                </div>
+                <div class="layer"></div>
+              </div></li>
+              <li>bbbbb<button>Remove</button><div>
+                <div class="button b2 button-mods-auto" id="button-mods-auto" style="float: right">
+                <input type="checkbox" class="checkbox" />
+                <div class="knobs">
+                  <span></span>
+                </div>
+                <div class="layer"></div>
+              </div></li>
+              <li>bbbbb<button>Remove</button><div>
+                <div class="button b2 button-mods-auto" id="button-mods-auto" style="float: right">
+                <input type="checkbox" class="checkbox" />
+                <div class="knobs">
+                  <span></span>
+                </div>
+                <div class="layer"></div>
+              </div></li>
+              <li>bbbbb<button>Remove</button><div>
+                <div class="button b2 button-mods-auto" id="button-mods-auto" style="float: right">
+                <input type="checkbox" class="checkbox" />
+                <div class="knobs">
+                  <span></span>
+                </div>
+                <div class="layer"></div>
+              </div></li>
+            </ul>
+          </nav>
+          <div class="list-item-container">
+            <input placeholder="username"/><button>Add broadcaster</button>
+          </div>
+        </div>
+      </div>
+      <br/>
+      <hr/>
+      <div class="sigin-button-div">
+        <div class="test">
+          <button class="signin-test-button" id="signin-test">Twitch sign in</button>
+        </div>
+      </div>
     </div>
     <script src="options.js"></script>
   <!-- End your code here -->

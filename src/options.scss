@@ -1,12 +1,311 @@
-.body {
-    background-color: #0e0e10;
-}
-
-.main-body {
-    background-color: #18181b;
-    border-radius: 0.3rem;
-    color: #ffffff;
-    display: grid;
+p, li, button, input {
+    font-family: Poppins;
+  }
+  
+  body {
+      background-color: #0e0e10;
+      -ms-overflow-style: none;
+      overflow-y: auto;
+      scrollbar-width: none;
+  }
+  
+  body::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .main-body {
+      background-color: #18181b;
+      border-radius: 0.4rem;
+      color: #ffffff;
+      margin: auto;
+      max-width: 750px;
+      text-align: left;
+  }
+  
+  .error-display {
+    background-color: #EE0000;
+    display: none;
     margin: auto;
-    width: 50%;
-}
+    padding-bottom: 1px;
+    padding-top: 1px;
+    text-align: center;
+    width: 100%;
+  }
+  
+  .page-label {
+    font-size: 1.8rem;
+    margin-bottom: 0;
+    padding-left: 10px;
+    padding-top: 5px;
+    text-align: center;
+  }
+  
+  .siging-button-div {
+    width: 100%;
+  }
+  
+  .test {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .signin-test-button {
+    margin-bottom: 15px;
+    margin-top: 5px;
+    text-align: center;
+  }
+  
+  .container {
+    column-gap: 15px;
+    display: grid;
+    grid-template-columns: 10% 10% auto 10% 10%;
+    padding-left: 20px;
+    padding-top: 30px;
+  }
+  
+  .label-item {
+    grid-column: 1 / span 2;
+    text-align: right;
+  }
+  
+  .list-label {
+    grid-column: 1 / span 4;
+    margin-bottom: -5px;
+    padding-left: 10px;
+    text-align: left;
+  }
+  
+  .list-item {
+    grid-column: 2 / span 3;
+  }
+  
+  .list-item-container {
+    display: grid; 
+    grid-template-columns: auto max-content;
+    margin-top: -7px;
+  }
+  
+  .list-item-container > input {
+    margin-right: 4px;
+    width: auto;
+  }
+  
+  .section-label {
+    font-size: 1.5rem;
+    grid-column: 1 / span 4;
+    margin-bottom: 0;
+    margin-top: -10px;
+  }
+  
+  .section-hr {
+    grid-column: 2 / span 3;
+    margin-left: -70px;
+    margin-right: -45px;
+    padding-bottom: 25px;
+    padding-top: 20px;
+  }
+  
+  li {
+    line-height: 25px;
+    margin-left: -27px;
+    padding: 5px;
+    padding-left: 0;
+  }
+  
+  li > button, li > input {
+    float: right;
+    margin-right: 10px;
+  }
+  
+  ul {
+    list-style: none;
+  }
+  
+  nav ul {
+    background-color: #222222;
+    border-radius: 0.35rem;
+    height: 135px;
+    overflow: hidden;
+    overflow-y: scroll;
+  }
+  
+  button {
+    background-color: #393941;
+    border-radius: 0.2rem;
+    border-style: none;
+    color: #FFFFFF;
+    margin-top: -2.5px;
+    padding: 5px;
+    box-shadow: 0 0px 4px #131313;
+  }
+
+  button:hover {
+    background-color: #292931;
+    cursor: pointer;
+  }
+
+  button:active {
+    box-shadow: none;
+  }
+
+  .disabled {
+    opacity: 0.55;
+    cursor: auto;
+    box-shadow: none;
+  }
+
+  div.disabled {
+    opacity: 0.35;
+  }
+
+  button.disabled:hover {
+    background-color: #393941;
+  }
+  
+  input {
+    background-color: #4e4e5a;
+    border-radius: 0.1rem;
+    border-style: none;
+    color: #FFFFFF;
+  }
+  
+  ul::-webkit-scrollbar {
+    margin-right: 10px;
+    width: 8px;
+  }
+  
+  ul::-webkit-scrollbar-track {
+    background: #4e4e5a;
+    border-radius: 0.1rem;
+  }
+  
+  ul::-webkit-scrollbar-thumb {
+    background: #292931;
+    border-radius: 0.1rem;
+  }
+  
+  ul::-webkit-scrollbar-thumb:hover {
+    background: #313138;
+  }
+  
+  /* ------------ */
+  
+  .knobs,
+  .layer {
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+  
+  .button {
+    position: relative;
+    top: 50%;
+    width: 37px;
+    height: 18px;
+    margin: -20px auto 0 auto;
+    overflow: hidden;
+    float:  left;
+    transform: translate(0,50%);
+    display: flex;
+    align-items: center;
+  }
+
+  li > div > .button {
+    margin-right: 10px;
+    transform: translate(0,0);
+  }
+  
+  .button.r,
+  .button.r .layer {
+    border-radius: 100px;
+  }
+  
+  .button.b2 {
+    border-radius: 2px;
+  }
+  
+  .checkbox {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 3;
+  }
+  
+  .knobs {
+    z-index: 2;
+  }
+  
+  .layer {
+    width: 100%;
+    background-color: #ebf7fc;
+    transition: 0.3s ease all;
+    z-index: 1;
+  }
+  
+  .knobs:before,
+  .knobs:after,
+  .knobs span {
+    position: absolute;
+    //bottom: 3px;
+    width: 5px;
+    height: 5px;
+    font-size: 0px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 0;
+    padding: 4px 4px;
+    border-radius: 2px;
+    transition: 0.3s ease all;
+  }
+  
+  .knobs:before,
+  .knobs:before {
+    content: "";
+    left: 4px;
+    background-color: #2c2c2c;
+    transform: translate(-15%, 20%);
+  }
+  
+  .knobs:after,
+  .knobs:after {
+    content: "";
+    right: 4px;
+    color: #4e4e4e;
+    transform: translate(50%, 20%);
+  }
+  
+  .knobs span,
+  .knobs span {
+    display: inline-block;
+    left: 4px;
+    color: #fff;
+    z-index: 1;
+  }
+  
+  .checkbox:checked + .knobs span,
+  .checkbox:checked + .knobs span {
+    color: #4e4e4e;
+  }
+  
+  .checkbox:checked + .knobs:before,
+  .checkbox:checked + .knobs:before {
+    left: 23px;
+    background-color: #00c072;
+  }
+  
+  .checkbox:checked + .knobs:after,
+  .checkbox:checked + .knobs:after {
+    color: #fff;
+  }
+  
+  .checkbox:checked ~ .layer,
+  .checkbox:checked ~ .layer {
+    background-color: #e0fce0;
+  }
