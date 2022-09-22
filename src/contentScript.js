@@ -14,6 +14,11 @@ var USERID = "Trj3Z04Rx04Zl2HGSggtk5Iu8S3yfrj";
 var BROADCASTER = false;
 var USER_REGEX = /https:\/\/(?:www.)?twitch.tv\/(?:popout\/)?moderator\/([a-zA-Z_0-9]{3,})(?:\/.*)?$/i;
 var IS_CHROME = (chrome.runtime && chrome.runtime.getURL);
+var _STORAGE = IS_CHROME ? chrome.storage.local : storage.local;
+var AUTH_TOKEN = false;
+var HANDLER = false;
+var TIMER = -1;
+var SETUP_USERS = false;
 //var LIGHT_MODE = false;
 
 // Content script file will run in the context of web page.
@@ -50,8 +55,8 @@ function w(s) {
   });
 }
 
-var message = { userid: USERID, payload: "{}"};
-var lastMessage = message;
+var message = false; //
+var lastMessage = false; // message
 
 var timer_status = {
   standby: "timer-status-standby",
@@ -70,14 +75,29 @@ var timer_status_text = {
   disabled: "DISABLED"
 };
 
-function broadcasterHandler() {
+async function broadcasterHandler() {
   w("button[data-highlight-selector=\"run-ad-button\"]").then(e => { e.forEach(i => { i.addEventListener("click", update, false); }); });
   w("button[data-highlight-selector=\"snooze-button\"]").then(e => { e.forEach(i => { i.addEventListener("click", update, false); }); });
+
+  var x = await storageGet(["auth_token", "user_id"]);
+  if(!("auth_token" in x)) {
+    console.log("Missing authorization token.\nReturning.");
+    HANDLER = false;
+    return;
+  }
+  if(!("user_id" in x)) {
+    console.error("Missing user_id.\nReturning.");
+    HANDLER = false;
+    return;
+  }
+  AUTH_TOKEN = x["auth_token"];
+  HANDLER = true;
+  USERID = x["user_id"]
 
   //console.log("asadfasddasasd")
   try {
     //console.log("asadfasddasasd2")
-    API.graphql(graphqlOperation(createUpdateMessage, {input: lastMessage}, "API_KEY")).then(() => {
+    API.graphql(graphqlOperation(createUpdateMessage, {input: { userid: USERID, payload: "{}"}}, AUTH_TOKEN)).then(() => {
       setInterval(update, 5000);
     }).catch(e => {
       if(e.errors[0].errorType == "DynamoDB:ConditionalCheckFailedException") {
@@ -95,7 +115,7 @@ function broadcasterHandler() {
     //console.log("asadfasddasasd4")
     var message = lastMessage;
     message.payload = payload;
-    API.graphql(graphqlOperation(updateUpdateMessage, {input: message})).then(e => {
+    API.graphql(graphqlOperation(updateUpdateMessage, {input: message}, AUTH_TOKEN)).then(e => {
       lastMessage = message;
     });
   }
@@ -142,6 +162,36 @@ function broadcasterHandler() {
   }
 }
 
+function storageGet(i) {
+  return new Promise((resolve, reject) => {
+    try {
+      _STORAGE.get(i, function(x) {
+        resolve(x);
+      });
+    } catch(e) {
+      reject(e);
+    }
+  });
+}
+
+function storageSet(i) {
+  return _STORAGE.set(i);
+}
+
+_STORAGE.onChanged.addListener((event) => {
+  if(!("auth_token" in event)) {
+    return;
+  }
+  AUTH_TOKEN = event["auth_token"].newValue;
+  if(!HANDLER) {
+    if(broadcasterPage()) {
+      broadcasterHandler();
+    } else {
+      modHandler().then(i => { TIMER = i });
+    }
+  }
+});
+
 var lastReceived = 0;
 var next = 0;
 var nextAd = false;
@@ -175,13 +225,33 @@ function getURL(url) {
   return (IS_CHROME ? chrome.runtime.getURL(url) : browser.runtime.getURL(url));
 }
 
-function modHandler() {
+async function modHandler(broadcasterName) {
   try {
     var content = getURL("/content.html");
   } catch(e) {
     var content = "content.html";
     debugger;
   }
+  var token = await storageGet(["auth_token", "setup_users"]);
+  if(!(["auth_token"] in token)) {
+    console.log("Missing authorization token.\nReturning.");
+    HANDLER = false;
+    return;
+  }
+  if(!(["setup_users" in token])) {
+    console.log("No setup users found.\nReturning.");
+    HANDLER = false;
+    return;
+  }
+  if(!(broadcasterName in token["setup_users"])) {
+    console.log(`Broadcaster ${broadcasterName} not setup.`);
+    HANDLER = false;
+    return;
+  }
+  HANDLER = true;
+  var user = token["setup_users"][broadcasterName]
+  AUTH_TOKEN = user["auth_token"];
+  USERID = user["user_id"];
   fetch(content, {
     "mode": "cors"
   }).then(x => x.text()).then(y => {
@@ -208,18 +278,34 @@ function modHandler() {
   });
 }
 
-function broadcasterPage() {
-  return BROADCASTER;
+async function broadcasterPage() {
+  var m = document.location.href.match(USER_REGEX);
+  if(!m || m.length < 1) {
+    console.log(m);
+    throw new Error("Invalid location detected");
+  }
+  var broadcaster = m[1];
+  try {
+    var user = (await storageGet(["username"]))["username"];
+  } catch(e) {
+    console.log("Please login with Twitch to start using the adForwarder extension");
+    throw e;
+  }
+  return [broadcaster, (broadcaster == user)]; //BROADCASTER
 }
 
-if(broadcasterPage()) {
-  broadcasterHandler();
-} else {
-  modHandler()
-}
+broadcasterPage().then(([broadcasterName, broadcaster]) => {
+  if(broadcaster) {
+    console.log("Starting broadcaster handler.");
+    broadcasterHandler();
+  } else {
+    console.log("Starting mod handler.");
+    modHandler(broadcasterName).then(i => { TIMER = i });
+  }
+});
 
 function getMessage(userid) {
-  API.graphql({ query: getUpdateMessage, variables: {userid: userid}}).then((m) => {
+  API.graphql({ query: getUpdateMessage, variables: {userid: userid}, authToken: AUTH_TOKEN}).then((m) => {
     console.log(m);
     if(m.data.getUpdateMessage.payload == "{}") {
       console.log("Empty payload. Returning");
@@ -234,7 +320,7 @@ function getMessage(userid) {
 }
 
 function onUpdateMessage(userid) {
-  API.graphql(graphqlOperation(onUpdateUpdateMessage, {userid: userid})).subscribe(
+  API.graphql(graphqlOperation(onUpdateUpdateMessage, {userid: userid}, AUTH_TOKEN)).subscribe(
     {
       next: (m) => {
         var t = JSON.parse(m.value.data.onUpdateUpdateMessage.payload);
@@ -266,6 +352,9 @@ function durationFormat(duration) {
 
 function startTimer() {
   return setInterval(() => {
+    if(!message) {
+      return;
+    }
     try {
       var [t, d, s, c] = !lastMessage ? simpleHandler() : lastHandler();
     } catch(e) {

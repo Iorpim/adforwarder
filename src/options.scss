@@ -112,6 +112,10 @@ p, li, button, input {
     padding: 5px;
     padding-left: 0;
   }
+
+  li > p {
+    display: inline;
+  }
   
   li > button, li > input {
     float: right;
