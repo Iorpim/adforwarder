@@ -53,7 +53,13 @@ function onClick(event) {
             console.error(r);
           } else {
             storageSet({auth_token: r.auth_token, username: r.username, user_id: r.user_id});
-            disableElement(button);
+            //disableElement(button);
+            changeLoginButton(button);
+            try {
+              enableElement(button);
+            } catch(e) {
+              console.error(e);
+            }
             getOptions(r).then(async y => {
               console.log(y);
               var r = JSON.parse(y);
@@ -299,6 +305,14 @@ function propertyHandler(prop) {
   };
 }
 
+async function logoutHandler(event) {
+  var button = event.target;
+  disableElement(button);
+  await storageRemove(["auth_token"]);
+  changeLoginButton(button);
+  enableElement(button);
+}
+
 async function disableElement(e) {
   e.classList.add("disabled");
   e.disabled = true;
@@ -319,6 +333,18 @@ async function checkboxEnable(e) {
   enableElement(e.parentElement.parentElement);
 }
 
+async function changeLoginButton(e) {
+  i.content = "Twitch sign out";
+  i.removeEventListener("click", onclick);
+  i.addEventListener("click", logoutHandler);
+}
+
+function changeLogoutButton(e) {
+  i.content = "Twitch sign in";
+  i.removeEventListener("click", logoutHandler);
+  i.addEventListener("click", onclick);
+}
+
 w("#signin-test").then(async e => {
     //onClick(null);
     var i = e[0];
@@ -326,7 +352,8 @@ w("#signin-test").then(async e => {
     document.getElementById("allow-user-button").addEventListener("click", allowUserHandler);
     var x = await storageGet(["auth_token"]);
     if("auth_token" in x) {
-      disableElement(i);
+      //disableElement(i);
+      changeLoginButton(i);
       getOptions(x).then(y => {
         console.log(y);
         var r = JSON.parse(y);
