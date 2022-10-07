@@ -2,6 +2,7 @@ import './options.scss';
 
 var CHROME = (chrome.runtime && chrome.runtime.getURL);
 var _STORAGE = CHROME ? chrome.storage.local : storage.local;
+var _IDENTITY = CHROME ? chrome.identity : browser.identity;
 
 function w(s) {
   return new Promise(resolve => {
@@ -33,11 +34,11 @@ function onClick(event) {
     if(button.classList.contains("disabled")) {
       return;
     }
-    var r = chrome.identity.getRedirectURL();
+    var r = _IDENTITY.getRedirectURL();
     console.log(r);
-    chrome.identity.launchWebAuthFlow({
+    _IDENTITY.launchWebAuthFlow({
         interactive: true,
-        url: `https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=8gej984rx3ypt104fl0gkncne8z6sn&redirect_uri=${r}&scope=&state=c3ab8aa609ea11e793ae92361f002671`
+        url: `https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=8gej984rx3ypt104fl0gkncne8z6sn&redirect_uri=${r}&scope=moderation:read`
     }, (a) => {
         fetch("https://jwihq12p96.execute-api.us-east-2.amazonaws.com/default/broadcaster/login", {
           "headers": {
@@ -253,7 +254,7 @@ async function setupUserHandler(event) {
   disableElement(input);
   listButtonStateChange(user_list, disableElement);
   var x = await storageGet(["auth_token", "setup_users"]);
-  if(username in x["setup_users"]) {
+  if("setup_users" in x && username in x["setup_users"]) {
     console.error(`User ${username} already setup`);
     input.value = "";
   } else {

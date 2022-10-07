@@ -113,7 +113,7 @@ async function broadcasterHandler() {
 
   function sendMessage(payload) {
     //console.log("asadfasddasasd4")
-    var message = lastMessage;
+    var message = lastMessage ? lastMessage : { userid: USERID, payload: {}};
     message.payload = payload;
     API.graphql(graphqlOperation(updateUpdateMessage, {input: message}, AUTH_TOKEN)).then(e => {
       lastMessage = message;
@@ -148,7 +148,7 @@ async function broadcasterHandler() {
       "mode": "cors"
     }).then(x => x.text()).then(y => {
       //console.log(y)
-      if(lastMessage.payload == "{}") {
+      if(!lastMessage) {
         sendMessage(y);
       } else {
         var j = JSON.parse(y);
