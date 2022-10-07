@@ -12,7 +12,8 @@ Amplify.configure(awsmobile);
 var USERID = "Trj3Z04Rx04Zl2HGSggtk5Iu8S3yfrj";
 
 var BROADCASTER = false;
-var USER_REGEX = /https:\/\/(?:www.)?twitch.tv\/(?:popout\/)?moderator\/([a-zA-Z_0-9]{3,})(?:\/.*)?$/i;
+var LAZY_REGEX = true;
+var USER_REGEX = LAZY_REGEX ? /https:\/\/(?:www.)?twitch.tv\/(?:popout\/)?moderator\/([a-zA-Z_0-9]{3,})(?:\/.*)?$/i : /^https:\/\/(?:www.)?twitch.tv\/(?:popout\/)?moderator\/([a-zA-Z_0-9]{3,})(?:\/.*)?(?:[#?].*)?$/i;
 var IS_CHROME = (chrome.runtime && chrome.runtime.getURL);
 var _STORAGE = IS_CHROME ? chrome.storage.local : storage.local;
 var AUTH_TOKEN = false;
@@ -91,6 +92,12 @@ async function broadcasterHandler() {
     return;
   }
   AUTH_TOKEN = x["auth_token"];
+  if(isExpired(AUTH_TOKEN)) {
+    console.error("Expired broadcaster token. Please renew session in the options page.");
+    await storageRemove(["auth_token"]);
+    HANDLER = false;
+    return;
+  }
   HANDLER = true;
   USERID = x["user_id"]
 
@@ -178,6 +185,10 @@ function storageSet(i) {
   return _STORAGE.set(i);
 }
 
+function storageRemove(i) {
+  return _STORAGE.remove(i);
+}
+
 _STORAGE.onChanged.addListener((event) => {
   if(!("auth_token" in event)) {
     return;
@@ -225,12 +236,32 @@ function getURL(url) {
   return (IS_CHROME ? chrome.runtime.getURL(url) : browser.runtime.getURL(url));
 }
 
+function isExpired(token) {
+  var a = JSON.parse(window.atob(token.split(".")[1]));
+  return (Date.now() > (a.exp * 1000));
+}
+
+function userLogin(x, t) {
+  return new Promise((resolve, reject) => {
+    fetch(`https://jwihq12p96.execute-api.us-east-2.amazonaws.com/default/user/login?broadcaster=${t}`, {
+      "headers": {
+        "content-type": "application/json",
+        "Authorisation": x["auth_token"]
+      },
+      "method": "GET"
+    }).then(x => x.text()).then(y => {
+      resolve(JSON.parse(y));
+    }).catch(e => {
+      reject(e);
+    });
+  });
+}
+
 async function modHandler(broadcasterName) {
   try {
     var content = getURL("/content.html");
   } catch(e) {
     var content = "content.html";
-    debugger;
   }
   var token = await storageGet(["auth_token", "setup_users"]);
   if(!(["auth_token"] in token)) {
@@ -251,6 +282,18 @@ async function modHandler(broadcasterName) {
   HANDLER = true;
   var user = token["setup_users"][broadcasterName]
   AUTH_TOKEN = user["auth_token"];
+  if(isExpired(AUTH_TOKEN)) {
+    try {
+      user["auth_token"] = await userLogin(broadcasterName, token);
+      token["setup_users"][broadcasterName] = user;
+      storageSet({"setup_users": token["setup_users"]});
+      AUTH_TOKEN = user["auto_token"];
+    } catch(e) {
+      console.error(e);
+      HANDLER = false;
+      return;
+    }
+  }
   USERID = user["user_id"];
   fetch(content, {
     "mode": "cors"
