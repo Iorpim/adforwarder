@@ -7,17 +7,23 @@
   </head>
   <body>
     <div class="app">
-      <p class="counter-label">Counter</p>
-      <div id="counter" class="counter"></div>
+      <div id="circle-button" class="circle-button disabled">
+        <svg class="circle-button disabled">
+          <g>
+            <circle id="circle-color" cx="150" cy="80" r="60" fill="#40c020"></circle>
+            <circle cx="150" cy="80" r="58" fill="#4a4a4e"></circle>
+            <text id="circle-text" x="122" y="87" fill="white" font-size="20">-------</text>
+          </g>
+        </svg>
+      </div>
       <div class="button-container">
-        <button id="decrementBtn" class="button">-</button>
-        <button id="incrementBtn" class="button">+</button>
+        <button id="optionsBtn" class="button">Options</button>
       </div>
 
-      <hr class="divider" />
+      <!-- <hr class="divider" />
 
       <p class="title">Chrome Extension is Ready!</p>
-      <p class="subtitle">Start by updating <code>popup.html</code></p>
+      <p class="subtitle">Start by updating <code>popup.html</code></p> -->
     </div>
 
     <script src="popup.js"></script>

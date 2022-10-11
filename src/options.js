@@ -34,6 +34,7 @@ function onClick(event) {
     if(button.classList.contains("disabled")) {
       return;
     }
+    disableElement(button);
     var r = _IDENTITY.getRedirectURL();
     console.log(r);
     _IDENTITY.launchWebAuthFlow({
@@ -51,6 +52,7 @@ function onClick(event) {
           r = JSON.parse(y);
           if(r.status == "error") {
             console.error(r);
+            enableElement(button);
           } else {
             storageSet({auth_token: r.auth_token, username: r.username, user_id: r.user_id});
             //disableElement(button);
@@ -309,7 +311,7 @@ async function logoutHandler(event) {
   var button = event.target;
   disableElement(button);
   await storageRemove(["auth_token"]);
-  changeLoginButton(button);
+  changeLogoutButton(button);
   enableElement(button);
 }
 
@@ -333,16 +335,43 @@ async function checkboxEnable(e) {
   enableElement(e.parentElement.parentElement);
 }
 
+function clearList(e) {
+  var entries = e.getElementsByTagName("li");
+  for(var i = 0; i < entries.length; i++) {
+    entries[i].remove();
+  }
+}
+
+function disableAllFields() {
+  var r = document.getElementById("checkbox-mods-only");
+  r.checked = false;
+  checkboxDisable(r);
+  r = document.getElementById("checkbox-mods-auto");
+  r.checked = false;
+  checkboxDisable(r);
+  var allowedUsersList = document.getElementById("allowed-users-list");
+  clearList(allowedUsersList);
+  disableElement(allowedUsersList.parentElement.parentElement);
+  disableElement(document.getElementById("allow-user-input"));
+  disableElement(document.getElementById("allow-user-button"));
+  disableElement(document.getElementById("setup-user-input"));
+  disableElement(document.getElementById("setup-user-button"));
+  var setupUsersList = document.getElementById("setup-users-list");
+  clearList(setupUsersList);
+  disableElement(setupUsersList.parentElement.parentElement);
+}
+
 async function changeLoginButton(e) {
-  i.content = "Twitch sign out";
-  i.removeEventListener("click", onclick);
-  i.addEventListener("click", logoutHandler);
+  e.textContent = "Twitch sign out";
+  e.removeEventListener("click", onClick);
+  e.addEventListener("click", logoutHandler);
 }
 
 function changeLogoutButton(e) {
-  i.content = "Twitch sign in";
-  i.removeEventListener("click", logoutHandler);
-  i.addEventListener("click", onclick);
+  e.textContent = "Twitch sign in";
+  e.removeEventListener("click", logoutHandler);
+  e.addEventListener("click", onClick);
+  disableAllFields();
 }
 
 w("#signin-test").then(async e => {
@@ -381,13 +410,6 @@ w("#signin-test").then(async e => {
         document.getElementById("setup-user-button").addEventListener("click", setupUserHandler);
       });
     } else {
-      checkboxDisable(document.getElementById("checkbox-mods-only"));
-      checkboxDisable(document.getElementById("checkbox-mods-auto"));
-      disableElement(document.getElementById("allowed-users-list").parentElement.parentElement);
-      disableElement(document.getElementById("allow-user-input"));
-      disableElement(document.getElementById("allow-user-button"));
-      disableElement(document.getElementById("setup-user-input"));
-      disableElement(document.getElementById("setup-user-button"));
-      disableElement(document.getElementById("setup-users-list").parentElement.parentElement);
+      disableAllFields();
     }
 });

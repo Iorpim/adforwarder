@@ -2,6 +2,10 @@
 
 import './popup.css';
 
+
+var CHROME = (chrome.runtime && chrome.runtime.getURL);
+var _WINDOWS = CHROME ? chrome.windows : browser.windows;
+
 (function () {
   // We will make use of Storage API to get and store `count` value
   // More information on Storage API can we found at
@@ -28,7 +32,7 @@ import './popup.css';
     },
   };
 
-  function setupCounter(initialValue = 0) {
+  /*function setupCounter(initialValue = 0) {
     document.getElementById('counter').innerHTML = initialValue;
 
     document.getElementById('incrementBtn').addEventListener('click', () => {
@@ -95,7 +99,34 @@ import './popup.css';
     });
   }
 
-  document.addEventListener('DOMContentLoaded', restoreCounter);
+  document.addEventListener('DOMContentLoaded', restoreCounter);*/
+
+document.getElementById("optionsBtn").addEventListener("click", (event) => {
+  _WINDOWS.create({ url: "options.html"});
+});
+
+document.getElementById("circle-button").addEventListener("click", (event) => {
+  if(event.target.classList.contains("disabled")) {
+    return;
+  }
+  var t = document.getElementById("circle-text");
+  var c = document.getElementById("circle-color");
+  switch(t.textContent) {
+    case "Enabled":
+      t.textContent = "Disabled";
+      t.setAttribute("x", "112");
+      c.setAttribute("fill", "#ff2a2a");
+      break;
+    case "Disabled":
+      t.textContent = "Enabled";
+      t.setAttribute("x", "115");
+      c.setAttribute("fill", "#40c020");
+      break;
+    default:
+      console.error(`Invalid circle text valued received ${t}`);
+      return;
+  }
+});
 
   // Communicate with background file by sending a message
   chrome.runtime.sendMessage(

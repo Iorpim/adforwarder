@@ -8,7 +8,7 @@
     "build": "webpack --mode=production --config config/webpack.config.js",
     "format": "prettier --write --ignore-unknown \"{config,public,src}/**/*.{html,css,js,ts,json}\"",
     "serve": "webpack serve --mode=development --live-reload --config config/webpack.config.js",
-    "firefox": "webpack --mode=production --config config/webpack.config.js && cp manifest_firefox.json build/manifest.json"
+    "firefox": "webpack --mode=production --config config/webpack.config.js && cp manifest_firefox.json build/manifest.json || copy manifest_firefox.json build\\manifest.json"
   },
   "devDependencies": {
     "babel-loader": "^8.2.5",
