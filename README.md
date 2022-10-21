@@ -1,15 +1,10 @@
-# <img src="public/icons/icon_48.png" width="45" align="left"> Adforwarder
+# <img src="public/icons/icon_48.png" width="45" align="left"> Ad Forwarder
 
-My Chrome Extension
-
-## Features
-
-- Feature 1
-- Feature 2
+Ad Forwarder
 
 ## Install
 
-[**Chrome** extension]() <!-- TODO: Add chrome extension link inside parenthesis -->
+[**Chrome** extension](https://chrome.google.com/webstore/detail/npldampnaekmnofjepdgllablcfieldn)
 
 ## Contribution
 
