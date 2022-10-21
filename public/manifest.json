@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Adforwarder",
-  "version": "0.3.9.13",
+  "version": "0.3.9.131",
   "description": "Twitch ad data forwarder/timer for mod view",
   "icons": {
     "16": "icons/icon_16.png",
@@ -22,8 +22,7 @@
   "options_page": "options.html",
   "permissions": [
     "identity",
-    "storage",
-    "tabs"
+    "storage"
   ],
   "web_accessible_resources": [
     {

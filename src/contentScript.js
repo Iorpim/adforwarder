@@ -264,12 +264,12 @@ async function modHandler(broadcasterName) {
     var content = "content.html";
   }
   var token = await storageGet(["auth_token", "setup_users"]);
-  if(!(["auth_token"] in token)) {
+  if(!("auth_token" in token)) {
     console.log("Missing authorization token.\nReturning.");
     HANDLER = false;
     return;
   }
-  if(!(["setup_users" in token])) {
+  if(!("setup_users" in token)) {
     console.log("No setup users found.\nReturning.");
     HANDLER = false;
     return;
@@ -284,12 +284,12 @@ async function modHandler(broadcasterName) {
   AUTH_TOKEN = user["auth_token"];
   if(isExpired(AUTH_TOKEN)) {
     try {
-      user["auth_token"] = await userLogin(broadcasterName, token);
+      user["auth_token"] = (await userLogin(token, broadcasterName))["auth_token"];
       token["setup_users"][broadcasterName] = user;
       storageSet({"setup_users": token["setup_users"]});
-      AUTH_TOKEN = user["auto_token"];
+      AUTH_TOKEN = user["auth_token"];
     } catch(e) {
-      console.error(e);
+      console.error("Failed to renew token.\n", e);
       HANDLER = false;
       return;
     }
@@ -314,7 +314,7 @@ async function modHandler(broadcasterName) {
     onUpdateMessage(USERID);
     setTimeout(() => {
       w("p[title='Active Mods']").then(e => {
-        modHandler();
+        modHandler(broadcasterName);
       });
     }, 5000);
     return startTimer();
